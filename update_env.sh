@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Calea către fișierul .env
-ENV_FILE="./data_parser_vm/.env"
+ENV_FILE=".env"
 
 # Funcție pentru obținerea IP-ului public (folosind `curl` sau `hostname -I` pe GCP)
 get_public_ip() {
