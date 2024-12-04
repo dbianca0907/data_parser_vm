@@ -87,7 +87,7 @@ const insertData = async (data: SensorIngestionContract) => {
     //const timestamp = new Date(data.timestamp * 1000).toISOString(); // Convertire la ISO
     const timestampInNanoSeconds = data.timestamp * 1000000; // multiplici cu 1 milion pentru a obține nanosecunde
 
-const timestamp = new Date(timestampInNanoSeconds).toISOString(); // Convertire la ISO
+    // const timestamp = new Date(timestampInNanoSeconds).toISOString(); // Convertire la ISO
     for (const entry of data.data) {
       const query = `
         INSERT INTO sensor_data (client, timestamp, latitude, longitude, dimension, value)
@@ -95,7 +95,7 @@ const timestamp = new Date(timestampInNanoSeconds).toISOString(); // Convertire 
       `;
       const values = [
         data.clientId,
-        timestamp,
+        timestampInNanoSeconds,
         location.latitude,
         location.longitude,
         entry.dimension,
