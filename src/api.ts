@@ -9,7 +9,7 @@ dotenv.config();
 // Definește structura datelor primite
 const sensorIngestionContract = z.object({
   clientId: z.string().min(1),
-  timestamp: z.number().int().positive(),
+  timestamp: z.union([z.number().int().positive(), z.bigint()]),
   location: z.object({
     latitude: z.number(),
     longitude: z.number(),
@@ -45,7 +45,15 @@ export const ingest = async (
 
   try {
     // Stocare directă în baza de date
-    await insertData(validation.data);
+    // Convertire timestamp din milisecunde (dacă este cazul) în nanosecunde
+    const validatedData = {
+      ...validation.data,
+      timestamp:
+        validation.data.timestamp > 1_000_000_000_000 // Verifică dacă este în milisecunde
+          ? BigInt(validation.data.timestamp) * BigInt(1_000_000)
+          : BigInt(validation.data.timestamp) * BigInt(1_000_000_000), // Convertire din secunde
+    };
+    await insertData(validatedData);
   } catch (e) {
     console.log(e);
     logger.error("Failed to insert data into QuestDB", { data, error: e });
@@ -58,7 +66,7 @@ export const ingest = async (
     };
   }
 
-  logger.info("Ingested data successfully", { data });
+
   return {
     status: 200,
     body: {
@@ -84,8 +92,13 @@ const insertData = async (data: SensorIngestionContract) => {
   try {
     // Inserare locație și timestamp
     const location = data.location;
-    const timestamp = new Date(data.timestamp * 1000).toISOString(); // Convertire la ISO
+    //const timestamp = new Date(data.timestamp * 1000).toISOString(); // Convertire la ISO
+    const timestamp_raw =
+  typeof data.timestamp === "bigint"
+    ? data.timestamp * 1000n // Dacă este bigint, multiplică cu 1000n
+    : BigInt(data.timestamp) * 1000n; // Dacă este number, convertește-l la bigint și multiplică
 
+const timestamp = new Date(Number(timestamp_raw / 1_000_000n)).toISOString(); // Convertire la ISO
     for (const entry of data.data) {
       const query = `
         INSERT INTO sensor_data (client, timestamp, latitude, longitude, dimension, value)
