@@ -85,8 +85,9 @@ const insertData = async (data: SensorIngestionContract) => {
     // Inserare locație și timestamp
     const location = data.location;
     //const timestamp = new Date(data.timestamp * 1000).toISOString(); // Convertire la ISO
-    const timestampInNanoSeconds = BigInt(data.timestamp) * 1000000n; // Asigurare că este bigint
-    console.log("Timestamp nanoseconds:", timestampInNanoSeconds.toString());
+    const timestampInNanoSeconds = BigInt(data.timestamp) * 1000000n;
+    const isoTimestamp = new Date(Number(data.timestamp)).toISOString(); // ISO 8601
+    console.log("ISO Timestamp:", isoTimestamp);
     // const timestamp = new Date(timestampInNanoSeconds).toISOString(); // Convertire la ISO
     for (const entry of data.data) {
       const query = `
@@ -95,7 +96,7 @@ const insertData = async (data: SensorIngestionContract) => {
       `;
       const values = [
         data.clientId,
-        timestampInNanoSeconds.toString(), // Convertim bigint la string,
+        isoTimestamp, // Convertim bigint la string,
         location.latitude,
         location.longitude,
         entry.dimension,
