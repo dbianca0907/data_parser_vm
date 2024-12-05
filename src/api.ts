@@ -84,11 +84,8 @@ const insertData = async (data: SensorIngestionContract) => {
   try {
     // Inserare locație și timestamp
     const location = data.location;
-    //const timestamp = new Date(data.timestamp * 1000).toISOString(); // Convertire la ISO
     const timestampInNanoSeconds = BigInt(data.timestamp) * 1000000n;
-    const isoTimestamp = new Date(Number(data.timestamp)).toISOString(); // ISO 8601
-    console.log("ISO Timestamp:", isoTimestamp);
-    // const timestamp = new Date(timestampInNanoSeconds).toISOString(); // Convertire la ISO
+    const isoTimestamp = new Date(Number(data.timestamp)).toISOString();
     for (const entry of data.data) {
       const query = `
         INSERT INTO sensor_data (client, timestamp, latitude, longitude, dimension, value)
