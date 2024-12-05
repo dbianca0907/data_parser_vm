@@ -86,7 +86,7 @@ const insertData = async (data: SensorIngestionContract) => {
     const location = data.location;
     //const timestamp = new Date(data.timestamp * 1000).toISOString(); // Convertire la ISO
     const timestampInNanoSeconds = BigInt(data.timestamp) * 1000000n; // Asigurare că este bigint
-
+    console.log("Timestamp nanoseconds:", timestampInNanoSeconds.toString());
     // const timestamp = new Date(timestampInNanoSeconds).toISOString(); // Convertire la ISO
     for (const entry of data.data) {
       const query = `
