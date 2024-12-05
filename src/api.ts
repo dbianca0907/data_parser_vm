@@ -84,9 +84,8 @@ const insertData = async (data: SensorIngestionContract) => {
   try {
     // Inserare locație și timestamp
     const location = data.location;
-    // const utc_time = data.timestamp + 7200000;
-    const time_plus_2hours = BigInt(data.timestamp) * 1000000n + 7200000000000n;
-    // const isoTimestamp = new Date(Number(utc_time)).toISOString();
+    const utc_time = data.timestamp + 7200000;
+    const isoTimestamp = new Date(Number(utc_time)).toISOString();
     for (const entry of data.data) {
       const query = `
         INSERT INTO sensor_data (client, timestamp, latitude, longitude, dimension, value)
@@ -94,7 +93,7 @@ const insertData = async (data: SensorIngestionContract) => {
       `;
       const values = [
         data.clientId,
-        time_plus_2hours, // Convertim bigint la string,
+        isoTimestamp, // Convertim bigint la string,
         location.latitude,
         location.longitude,
         entry.dimension,
